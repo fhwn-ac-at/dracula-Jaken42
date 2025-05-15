@@ -1,9 +1,12 @@
 CC = clang
-CFLAGS += -Wall -Wextra -Werror --std=c17
+CFLAGS = -Wall -Wextra --std=c17
 
-pfusch: pfusch.c
+all: adjacency_matrix.out
+
+adjacency_matrix.out:
+	$(CC) $(CFLAGS) -o adjacency_matrix.out adjacency_matrix/adjacency_matrix.c
 
 clean:
-	rm -f pfusch *.o
+	rm -f *.out
 
-.PHONY: clean
+.PHONY: all clean
