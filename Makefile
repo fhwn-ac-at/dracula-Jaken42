@@ -1,7 +1,13 @@
 CC = clang
 CFLAGS = -Wall -Wextra --std=c17
 
-all: adjacency_matrix.out
+all: snl.out lv.out adjacency_matrix.out
+
+snl.out:
+	$(CC) $(CFLAGS) -o snl.out snakes_and_ladders/main.c
+
+lv.out:
+	$(CC) $(CFLAGS) -o lv.out las_vegas/main.c
 
 adjacency_matrix.out:
 	$(CC) $(CFLAGS) -o adjacency_matrix.out adjacency_matrix/adjacency_matrix.c
