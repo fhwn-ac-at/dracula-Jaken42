@@ -1,10 +1,10 @@
 CC = clang
-CFLAGS = -Wall -Wextra --std=c17
+CFLAGS = -Wall -Wextra --std=gnu99
 
 all: snl.out lv.out adjacency_matrix.out
 
-snl.out:
-	$(CC) $(CFLAGS) -o snl.out snakes_and_ladders/main.c
+snl.out: snakes_and_ladders/main.c snakes_and_ladders/graph.c snakes_and_ladders/utils.c
+	$(CC) $(CFLAGS) -o snl.out $^
 
 lv.out:
 	$(CC) $(CFLAGS) -o lv.out las_vegas/main.c
