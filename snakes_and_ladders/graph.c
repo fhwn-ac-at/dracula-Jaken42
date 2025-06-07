@@ -47,9 +47,9 @@ node* generate_graph(cli_args args, node*** meta_start){
         } else {
 
         // For every successor pointer, set it correctly or set it to NULL if out of bounds
-            for (size_t j = 0; j < args.info.dice; j++){
+            for (size_t j = 0; j < args.info.dice+1; j++){
                 
-                if (j + i < args.info.size-1){
+                if (j + i < args.info.size){
                     (*meta_start)[i]->successors[j] = (*meta_start)[i+1+j];
                 } else {
                     (*meta_start)[i]->successors[j] = NULL;
