@@ -1,9 +1,9 @@
 CC = clang
-CFLAGS = -Wall -Wextra --std=gnu99
+CFLAGS = -Wall -Wextra -pedantic --std=gnu99
 
 all: snl.out lv.out adjacency_matrix.out
 
-snl.out: snakes_and_ladders/main.c snakes_and_ladders/graph.c snakes_and_ladders/utils.c
+snl.out: snakes_and_ladders/main.c snakes_and_ladders/graph.c snakes_and_ladders/utils.c snakes_and_ladders/sim.c
 	$(CC) $(CFLAGS) -o snl.out $^
 
 lv.out:

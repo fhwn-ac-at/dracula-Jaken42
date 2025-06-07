@@ -1,9 +1,14 @@
 #pragma once
 
+#define _DEFAULT_SOURCE 1
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
 #include <errno.h>
+
+// This one is exclusively for SIZE_MAX
+#include <stdint.h>
 
 #include <getopt.h>
 #include <unistd.h>
@@ -12,25 +17,29 @@
 #define DEFAULT_HEIGHT 10
 
 typedef struct game_meta {
-    int width;
-    int height;
-    int size;
-    int dice;
+    size_t width;
+    size_t height;
+    size_t size;
+    size_t dice;
 } game_meta;
+
+typedef struct special_pos{
+    size_t start;
+    size_t end;
+} special_pos;
 
 typedef struct cli_args {
     game_meta info;
-    int** specials;
-    int num_specials;
+    size_t* specials;
+    size_t num_specials;
 } cli_args;
 
 /**
- * @brief Tests a given string regarding long conversion. 
+ * @brief Gets CLI arguments.
  * 
- * @param optarg Target string.
+ * @param argc Number of CLI arguments.
+ * @param argv Array of CLI arguments.
  * 
- * @attention FOR parse_args(). NOT 1:1 REUSABLE!
+ * @returns Struct that is further used for graph creation. Exits program on its own if an error occured.
  */
-long int test_long_conversion(const char* optarg);
-
 cli_args parse_args(int argc, char** argv);

@@ -7,19 +7,14 @@
 
 typedef struct node {
     struct node* successors[6];
-    int is_special;
+    size_t special;
 } node;
-
-/**
- * @brief Allocates a graph node on the heap.
- * @return Pointer to node or NULL if malloc failed.
- */
-node* create_node(void);
 
 /**
  * @brief Generates the graph representation of the game board.
  * 
- * @param info CLI args from utils.h. Contain board info, snake info and ladder info.
+ * @param args CLI args from parse_args() (see utils.h). Contains board info, snake and ladder positions and number of snakes and ladders.
+ * @param meta_start Pointer to an array of node pointers. An array of pointers to all nodes is saved into this parameter. Used for freeing memory via cleanup_graph().  
  * 
  * @return Pointer to first node on board or NULL if error occured.
  */
