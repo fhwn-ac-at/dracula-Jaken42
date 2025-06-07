@@ -59,6 +59,7 @@ cli_args parse_args(int argc, char** argv){
         .info.dice = 6,
         .specials = NULL,
         .num_specials = 0,
+        .sample_size = DEFAULT_SAMPLE_SIZE
     };
     
     int opt;
@@ -67,7 +68,7 @@ cli_args parse_args(int argc, char** argv){
 
     int check_error = 0;
     
-    while((opt = getopt(argc, argv, "w:h:d:s:")) != -1){
+    while((opt = getopt(argc, argv, "w:h:d:r:s:")) != -1){
         
         switch (opt) {
             case -1:
@@ -99,6 +100,15 @@ cli_args parse_args(int argc, char** argv){
                 }
                 break;
             
+            case 'r':
+
+                args.sample_size = test_size_conversion(optarg, &check_error);
+                if (check_error){
+                    if (temp_special_array) free(temp_special_array);
+                    exit(EXIT_FAILURE);
+                }
+                break;
+
             // A special declaration. can either be snake or ladder. 
             // Puts it in a malloc'd array of a special type. 
             // Must be processed in a separate function.

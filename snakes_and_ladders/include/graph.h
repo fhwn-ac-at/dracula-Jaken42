@@ -5,10 +5,12 @@
 
 #include "utils.h"
 
-typedef struct node {
-    struct node* successors[6];
+typedef struct node node;
+
+struct node {
+    node** successors;
     size_t special;
-} node;
+};
 
 /**
  * @brief Generates the graph representation of the game board.
@@ -26,4 +28,4 @@ node* generate_graph(cli_args args, node*** meta_start);
  * @param target Target array to free.
  * @param count Length of target array.
  */
-void cleanup_graph(node** target, int count);
+void cleanup_graph(node** target, game_meta info);

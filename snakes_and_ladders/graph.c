@@ -1,15 +1,22 @@
 #include "include/graph.h"
 
-int debug = 1;
+int debug = 0;
 
 /**
  * @brief Allocates a graph node on the heap.
  * @return Pointer to node or NULL if malloc failed.
  */
-node* create_node(void){
+node* create_node(size_t num_successors){
     node* result = (node*)malloc(sizeof(node)); 
 
     if (!result){
+        return NULL;
+    }
+
+    result->successors = malloc(sizeof(node*) * num_successors);
+
+    if (!result->successors){
+        free(result);
         return NULL;
     }
 
@@ -21,11 +28,15 @@ node* generate_graph(cli_args args, node*** meta_start){
     *meta_start = (node**)malloc(sizeof(node*) * (args.info.size+1));
     
     for (size_t i = 0; i < args.info.size+1; i++){
-        (*meta_start)[i] = create_node();
+        (*meta_start)[i] = create_node(args.info.dice);
         
         // If malloc fails, free older nodes and return
         if (!(*meta_start)[i]){
             for (size_t j = i-1; j >= 0; j--){
+                
+                for (size_t k = 0; k < args.info.dice; k++){
+                    free((*meta_start)[j]->successors[k]);
+                }
                 free((*meta_start)[j]);
                 (*meta_start)[j] = NULL;
             }
@@ -35,7 +46,7 @@ node* generate_graph(cli_args args, node*** meta_start){
         }
     }
 
-    if (debug) printf("Created %lu nodes\n", args.info.size);
+    if (debug) printf("Created %lu nodes\n", args.info.size+1);
 
     // Assign successors for i
     for (size_t i = 0; i < args.info.size+1; i++){
@@ -47,7 +58,7 @@ node* generate_graph(cli_args args, node*** meta_start){
         } else {
 
         // For every successor pointer, set it correctly or set it to NULL if out of bounds
-            for (size_t j = 0; j < args.info.dice+1; j++){
+            for (size_t j = 0; j < args.info.dice; j++){
                 
                 if (j + i < args.info.size){
                     (*meta_start)[i]->successors[j] = (*meta_start)[i+1+j];
@@ -60,16 +71,18 @@ node* generate_graph(cli_args args, node*** meta_start){
         }
     }
 
-    if (debug) printf("Set successors for all %lu nodes, returning from func\n", args.info.size);
+    if (debug) printf("Set successors for all %lu nodes, returning from func\n", args.info.size+1);
 
     return (*meta_start)[0];
 }
 
-void cleanup_graph(node** target, int count){
+void cleanup_graph(node** target, game_meta info){
     
-    for (int i = 0; i < count; i++){
-        if (target[i]) free(target[i]);
+    for (size_t i = 0; i < info.size+1; i++){
+        
+        free(target[i]->successors);
+        free(target[i]);
     }
 
-    if (debug) printf("Cleaning up all %d nodes\n", count);
+    if (debug) printf("Cleaning up all %lu nodes\n", info.size+1);
 }

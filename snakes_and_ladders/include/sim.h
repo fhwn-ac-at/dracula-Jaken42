@@ -5,7 +5,7 @@
 
 typedef struct sim_result {
     size_t* rolls;
-    int num_rolls;
+    unsigned int num_rolls;
     int dnf;
 } sim_result;
 

@@ -16,6 +16,11 @@
 #define DEFAULT_WIDTH 10
 #define DEFAULT_HEIGHT 10
 
+// Limit on how many rolls a sim may attempt
+#define ROLL_LIMIT 1000
+
+#define DEFAULT_SAMPLE_SIZE 1000
+
 typedef struct game_meta {
     size_t width;
     size_t height;
@@ -32,6 +37,7 @@ typedef struct cli_args {
     game_meta info;
     size_t* specials;
     size_t num_specials;
+    size_t sample_size;
 } cli_args;
 
 /**
