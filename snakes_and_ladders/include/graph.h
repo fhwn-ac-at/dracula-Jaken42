@@ -10,6 +10,7 @@ typedef struct node node;
 struct node {
     node** successors;
     size_t special;
+    size_t times_touched;
 };
 
 /**

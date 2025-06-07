@@ -20,6 +20,8 @@ node* create_node(size_t num_successors){
         return NULL;
     }
 
+    result->times_touched = 0;
+
     return result;
 }
 

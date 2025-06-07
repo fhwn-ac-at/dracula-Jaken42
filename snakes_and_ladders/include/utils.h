@@ -15,9 +15,10 @@
 
 #define DEFAULT_WIDTH 10
 #define DEFAULT_HEIGHT 10
+#define DEFAULT_DICE_FACES 6
 
 // Limit on how many rolls a sim may attempt
-#define ROLL_LIMIT 1000
+#define DEFAULT_ROLL_LIMIT 1000
 
 #define DEFAULT_SAMPLE_SIZE 1000
 
@@ -38,6 +39,7 @@ typedef struct cli_args {
     size_t* specials;
     size_t num_specials;
     size_t sample_size;
+    size_t roll_limit;
 } cli_args;
 
 /**

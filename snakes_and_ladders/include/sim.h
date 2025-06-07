@@ -17,4 +17,4 @@ typedef struct sim_result {
  * 
  * @returns sim_result struct with dice sequence, num of rolls and an int designating success (0) or failure (1).
  */
-sim_result run_sim(node* pos, game_meta game_info);
+sim_result run_sim(node* pos, game_meta game_info, size_t roll_limit);

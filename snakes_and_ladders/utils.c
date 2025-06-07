@@ -56,10 +56,11 @@ cli_args parse_args(int argc, char** argv){
         .info.width = DEFAULT_WIDTH,
         .info.height = DEFAULT_HEIGHT,
         .info.size = DEFAULT_WIDTH * DEFAULT_HEIGHT,
-        .info.dice = 6,
+        .info.dice = DEFAULT_DICE_FACES,
         .specials = NULL,
         .num_specials = 0,
-        .sample_size = DEFAULT_SAMPLE_SIZE
+        .sample_size = DEFAULT_SAMPLE_SIZE,
+        .roll_limit = DEFAULT_ROLL_LIMIT
     };
     
     int opt;
@@ -68,13 +69,14 @@ cli_args parse_args(int argc, char** argv){
 
     int check_error = 0;
     
-    while((opt = getopt(argc, argv, "w:h:d:r:s:")) != -1){
+    while((opt = getopt(argc, argv, "w:h:d:r:n:s:")) != -1){
         
         switch (opt) {
             case -1:
                 //printf("Arg reading done.\n");
                 break;
 
+            // Board width
             case 'w':
 
                 args.info.width = test_size_conversion(optarg, &check_error);
@@ -83,7 +85,8 @@ cli_args parse_args(int argc, char** argv){
                     exit(EXIT_FAILURE);
                 }
                 break;
-
+            
+            // Board height
             case 'h':
                 args.info.height = test_size_conversion(optarg, &check_error);
                 if (check_error){
@@ -91,7 +94,8 @@ cli_args parse_args(int argc, char** argv){
                     exit(EXIT_FAILURE);
                 }
                 break;
-
+            
+            // Num of dice faces
             case 'd':
                 args.info.dice = test_size_conversion(optarg, &check_error);
                 if (check_error){
@@ -100,7 +104,18 @@ cli_args parse_args(int argc, char** argv){
                 }
                 break;
             
+            // Random roll limit before attempts are aborted
             case 'r':
+
+                args.roll_limit = test_size_conversion(optarg, &check_error);
+                if (check_error){
+                    if (temp_special_array) free(temp_special_array);
+                    exit(EXIT_FAILURE);
+                }
+                break;
+            
+            // Sample size
+            case 'n':
 
                 args.sample_size = test_size_conversion(optarg, &check_error);
                 if (check_error){

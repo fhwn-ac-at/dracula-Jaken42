@@ -27,8 +27,6 @@ int main(int argc, char** argv){
 
     node* board_start = generate_graph(args, &cleanup_board);
 
-    free(args.specials);
-
     if (!board_start){
         exit(EXIT_FAILURE);
     }
@@ -54,6 +52,7 @@ int main(int argc, char** argv){
     sim_result* results = malloc(sizeof(sim_result) * args.sample_size);
 
     if (!results){
+        free(args.specials);
         cleanup_graph(cleanup_board, args.info);
         fprintf(stderr, "Simulation result array malloc failed!\n");
         exit(EXIT_FAILURE);
@@ -63,7 +62,7 @@ int main(int argc, char** argv){
     size_t fastest_sim = 0;
 
     for (size_t i = 0; i < args.sample_size; i++){
-        results[i] = run_sim(board_start, args.info);
+        results[i] = run_sim(board_start, args.info, args.roll_limit);
         if (results[i].dnf < 0){
             for (size_t j = 0; j >= 0; j--) {
                 free(results[j].rolls);
@@ -71,10 +70,10 @@ int main(int argc, char** argv){
             fprintf(stderr, "Error allocating space for a simulation roll array!\n");
             exit(EXIT_FAILURE);
         }
-        total_rolls += results[i].num_rolls;
+        if (!results[i].dnf) total_rolls += results[i].num_rolls;
         
-        if (results[i].num_rolls < results[fastest_sim].num_rolls){
-            fastest_sim = i;
+        if (!results[i].dnf && ((i > 0 && fastest_sim == 0) || results[i].num_rolls < results[fastest_sim].num_rolls)){
+            fastest_sim = i+1;
         }
     }
 
@@ -86,12 +85,36 @@ int main(int argc, char** argv){
 
     float average_rolls = total_rolls / args.sample_size;
 
-    printf("Results of sims:\n");
-    printf("Average number of rolls to win: %.4f\n", average_rolls);
-    printf("Fastest simulation:\nSimulation #%lu with %u rolls.\n", fastest_sim, results[fastest_sim].num_rolls);
-    printf("Rolls in this simulation:\n|");
-    for (unsigned int i = 0; i < results[fastest_sim].num_rolls; i++){
-        printf(" %lu |", results[fastest_sim].rolls[i]);
+    printf("+-----------------------+\n| Simulation statistics |\n+-----------------------+\n");
+    printf("| Sample size: %lu\n", args.sample_size);
+    printf("| Board size: %lu x %lu\n", args.info.width, args.info.height);
+    printf("| Dice size: %lu\n", args.info.dice);
+    printf("| Dice roll limit: %lu\n", args.roll_limit);
+    printf("| Amount of snakes and ladders: %lu\n", args.num_specials);
+    if (!fastest_sim){
+        printf("+ No simulation got to the finish!\n");
+    } else {
+        printf("| Average number of rolls to win: %.4f\n", average_rolls);
+        printf("| Fastest simulation:\n| Simulation #%lu with %u rolls.\n", fastest_sim-1, results[fastest_sim-1].num_rolls);
+        printf("| Rolls in this simulation:\n|");
+        for (unsigned int i = 0; i < results[fastest_sim-1].num_rolls; i++){
+            printf(" %lu ", results[fastest_sim-1].rolls[i]);
+            if (i+1 < results[fastest_sim-1].num_rolls) printf("->");
+        }
+        printf("\n| List of snakes and Ladders and times they were touched (Total %lu):\n", args.num_specials);
+        size_t snake_counter = 0;
+        size_t ladder_counter = 0;
+        for (size_t i = 0; i < args.info.size; i++){
+            if (!args.specials[i]) continue;
+            if (i < args.specials[i]){
+                ladder_counter++;
+                printf("| Ladder #%lu - Touched %lu times\n", ladder_counter, cleanup_board[args.specials[i]]->times_touched);
+            } else {
+                snake_counter++;
+                printf("| Snake #%lu - Touched %lu times\n", snake_counter, cleanup_board[args.specials[i]]->times_touched);
+            }
+        }
+        printf("+--------------------------------------------------------------------------+\n");
     }
     printf("\n");
     /*
@@ -109,6 +132,7 @@ int main(int argc, char** argv){
         free(results[i].rolls);
     }
 
+    free(args.specials);
     
     cleanup_graph(cleanup_board, args.info);
 

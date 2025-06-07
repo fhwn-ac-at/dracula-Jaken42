@@ -2,17 +2,19 @@
 
 size_t random_roll(size_t dice_faces){
     
-    // Hellish bitshifting to achieve random number as large as size_t for huge board variants
-    size_t rand_size_large = ((size_t)lrand48() << 31) | (size_t)lrand48();
-    
-    return rand_size_large % dice_faces; 
+    if (dice_faces == 1){
+        return 0;
+    }
+
+    // drand48 returns a double between 0 and 1. multiply to get one of the dice faces
+    return (size_t)(drand48() * dice_faces); 
 }
 
-sim_result run_sim(node* pos, game_meta info){
+sim_result run_sim(node* pos, game_meta info, size_t roll_limit){
     sim_result result = {
         .dnf = 0,
         .num_rolls = 0,
-        .rolls = malloc(sizeof(size_t) * ROLL_LIMIT)
+        .rolls = malloc(sizeof(size_t) * roll_limit)
     };
 
     if(!result.rolls){
@@ -30,7 +32,8 @@ sim_result run_sim(node* pos, game_meta info){
     current.field = pos; 
     current.abs_pos = 0;
 
-    while (current.abs_pos != info.size && result.num_rolls < ROLL_LIMIT){
+    // Main rolling loop
+    while (current.abs_pos != info.size && result.num_rolls < roll_limit){
         size_t roll = random_roll(info.dice);
 
         if (current.field->successors[roll] != NULL){
@@ -38,9 +41,12 @@ sim_result run_sim(node* pos, game_meta info){
             if (current.field->successors[roll]->special){
                 current.abs_pos = current.field->successors[roll]->special;
                 current.field = current.field->successors[roll]->successors[0];
+
+                // THIS WILL CAUSE CONCURRENCY ISSUES!
+                current.field->times_touched += 1;
             }  else {
-                current.field = current.field->successors[roll];
                 current.abs_pos += roll + 1; 
+                current.field = current.field->successors[roll];
             }
         }
 
