@@ -102,7 +102,10 @@ int main(int argc, char** argv){
             printf(" %lu ", results[fastest_sim-1].rolls[i]);
             if (i+1 < results[fastest_sim-1].num_rolls) printf("->");
         }
-        printf("\n| List of snakes and Ladders and times they were touched (Total %lu):\n", args.num_specials);
+
+        printf("\n");
+
+        if (args.num_specials) printf("|\n| List of snakes and Ladders and times they were touched (Total %lu):\n", args.num_specials);
         
         size_t snake_counter = 0;
         size_t snake_touch_total = 0;
