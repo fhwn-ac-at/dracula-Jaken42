@@ -14,10 +14,6 @@ The program reads CLI arguments to customzie the board.
 
 ### Usage
 
-- No CLI argument parameters may be smaller than 1.
-
-- All CLI argument parameters must be whole numbers.
-
 - **w**:  
   Width of the board.
 
@@ -27,19 +23,26 @@ The program reads CLI arguments to customzie the board.
 - **d**:  
   Number of faces on the dice.
 
-- **r**
+- **r**:
   Maximum number of rolls per simulation.
 
-- **n**
+- **n**:
   Number of simulations to run.
 
-- **s**
-  Designates a `special field` (a snake or a ladder). Must be followed by two numbers.
+- **s**:
+  Designates a `special field (a snake or a ladder)`. Must be followed by two numbers.
   Type of special field is determined by what number is larger.
   For multiple snakes and ladders, reuse this flag.
   
   Example: 
   `-s 10 20 -s 50 10 -s 2 99`
+
+### Usage note
+
+  - No CLI argument parameters may be smaller than 1.
+
+  - All CLI argument parameters must be whole numbers.
+
 
 ---
 
@@ -54,7 +57,7 @@ The program reads CLI arguments to customzie the board.
 - **Game simulation**:  
   `sim.c` and `sim.h`
 
-- **Main**
+- **Main**:
   `main.c`
 
 ---
@@ -62,4 +65,6 @@ The program reads CLI arguments to customzie the board.
 ### Examples
 
 I have provided a few text files with examples in snakes_and_ladders/examples/.
-Redirect their contents to the program to try them out!
+
+Use the make commands `run1` through `run4` to try them out, 
+or write `make run file=filename` to easily pass your own text file with flags!

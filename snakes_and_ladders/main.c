@@ -100,7 +100,10 @@ int main(int argc, char** argv){
         printf("| Rolls in this simulation:\n|");
         for (unsigned int i = 0; i < results[fastest_sim-1].num_rolls; i++){
             printf(" %lu ", results[fastest_sim-1].rolls[i]);
+            
             if (i+1 < results[fastest_sim-1].num_rolls) printf("->");
+            
+            if ((i + 1) % 9 == 0) printf("\n|");
         }
 
         printf("\n");
