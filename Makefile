@@ -15,4 +15,7 @@ adjacency_matrix.out:
 clean:
 	rm -f *.out
 
+run:
+	./snl.out -w 5 -h 5 -d 5 -s 10 20 -s 24 5 -s 11 6 -s 9 23
+
 .PHONY: all clean

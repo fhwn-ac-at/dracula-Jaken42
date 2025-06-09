@@ -83,7 +83,7 @@ int main(int argc, char** argv){
     //    total_rolls += results[i].num_rolls;
     //}
 
-    float average_rolls = total_rolls / args.sample_size;
+    double average_rolls = (double)total_rolls / args.sample_size;
 
     printf("+-----------------------+\n| Simulation statistics |\n+-----------------------+\n");
     printf("| Sample size: %lu\n", args.sample_size);
@@ -92,29 +92,48 @@ int main(int argc, char** argv){
     printf("| Dice roll limit: %lu\n", args.roll_limit);
     printf("| Amount of snakes and ladders: %lu\n", args.num_specials);
     if (!fastest_sim){
-        printf("+ No simulation got to the finish!\n");
+        printf("| No simulation got to the finish!\n+------------------------------------------------------------------------------------+");
     } else {
+        printf("+------------------------------------------------------------------------------------+\n");
         printf("| Average number of rolls to win: %.4f\n", average_rolls);
-        printf("| Fastest simulation:\n| Simulation #%lu with %u rolls.\n", fastest_sim-1, results[fastest_sim-1].num_rolls);
+        printf("| Fastest simulation:\n| Simulation #%lu with %u rolls\n", fastest_sim-1, results[fastest_sim-1].num_rolls);
         printf("| Rolls in this simulation:\n|");
         for (unsigned int i = 0; i < results[fastest_sim-1].num_rolls; i++){
             printf(" %lu ", results[fastest_sim-1].rolls[i]);
             if (i+1 < results[fastest_sim-1].num_rolls) printf("->");
         }
         printf("\n| List of snakes and Ladders and times they were touched (Total %lu):\n", args.num_specials);
+        
         size_t snake_counter = 0;
-        size_t ladder_counter = 0;
+        size_t snake_touch_total = 0;
         for (size_t i = 0; i < args.info.size; i++){
-            if (!args.specials[i]) continue;
-            if (i < args.specials[i]){
-                ladder_counter++;
-                printf("| Ladder #%lu - Touched %lu times\n", ladder_counter, cleanup_board[args.specials[i]]->times_touched);
-            } else {
-                snake_counter++;
-                printf("| Snake #%lu - Touched %lu times\n", snake_counter, cleanup_board[args.specials[i]]->times_touched);
-            }
+            if (!args.specials[i] || i < args.specials[i]) continue;
+            snake_touch_total += cleanup_board[args.specials[i]]->times_touched;
         }
-        printf("+--------------------------------------------------------------------------+\n");
+
+        for (size_t i = 0; i < args.info.size; i++){
+            if (!args.specials[i] || i < args.specials[i]) continue;
+            
+            snake_counter++;
+            printf("| Snake #%lu (From %lu to %lu) - Touched %lu times in total (%.2f%% of all snake traversals)\n", snake_counter, i, args.specials[i], cleanup_board[args.specials[i]]->times_touched, ((float)cleanup_board[args.specials[i]]->times_touched / snake_touch_total) * 100.0f);
+            
+        }
+
+        size_t ladder_counter = 0;
+        size_t ladder_touch_total = 0;
+        for (size_t i = 0; i < args.info.size; i++){
+            if (!args.specials[i] || i > args.specials[i]) continue;
+            ladder_touch_total += cleanup_board[args.specials[i]]->times_touched;
+        }
+        for (size_t i = 0; i < args.info.size; i++){
+            if (!args.specials[i] || i > args.specials[i]) continue;
+            
+            ladder_counter++;
+            printf("| Ladder #%lu (From %lu to %lu) - Touched %lu times in total (%.2f%% of all ladder traversals)\n", ladder_counter, i, args.specials[i], cleanup_board[args.specials[i]]->times_touched, ((float)cleanup_board[args.specials[i]]->times_touched / ladder_touch_total) * 100.0f);
+            
+        }
+
+        printf("+------------------------------------------------------------------------------------+\n");
     }
     printf("\n");
     /*

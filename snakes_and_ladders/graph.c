@@ -25,22 +25,27 @@ node* create_node(size_t num_successors){
     return result;
 }
 
-node* generate_graph(cli_args args, node*** meta_start){
+node* generate_graph(cli_args args, node*** graph_array){
 
-    *meta_start = (node**)malloc(sizeof(node*) * (args.info.size+1));
+    *graph_array = (node**)malloc(sizeof(node*) * (args.info.size+1));
     
+    if (!(*graph_array)){
+        fprintf(stderr, "Error allocating space for node array! Exiting...\n");
+        return NULL;
+    }
+
     for (size_t i = 0; i < args.info.size+1; i++){
-        (*meta_start)[i] = create_node(args.info.dice);
+        (*graph_array)[i] = create_node(args.info.dice);
         
         // If malloc fails, free older nodes and return
-        if (!(*meta_start)[i]){
+        if (!(*graph_array)[i]){
             for (size_t j = i-1; j >= 0; j--){
                 
                 for (size_t k = 0; k < args.info.dice; k++){
-                    free((*meta_start)[j]->successors[k]);
+                    free((*graph_array)[j]->successors[k]);
                 }
-                free((*meta_start)[j]);
-                (*meta_start)[j] = NULL;
+                free((*graph_array)[j]);
+                (*graph_array)[j] = NULL;
             }
             free(args.specials);
             fprintf(stderr, "Error allocating space for graph nodes! Exiting...\n");
@@ -54,8 +59,8 @@ node* generate_graph(cli_args args, node*** meta_start){
     for (size_t i = 0; i < args.info.size+1; i++){
 
         if (i > 0 && args.specials[i-1]){
-            (*meta_start)[i]->successors[0] = (*meta_start)[args.specials[i-1]];
-            (*meta_start)[i]->special = args.specials[i-1];
+            (*graph_array)[i]->successors[0] = (*graph_array)[args.specials[i-1]];
+            (*graph_array)[i]->special = args.specials[i-1];
 
         } else {
 
@@ -63,19 +68,19 @@ node* generate_graph(cli_args args, node*** meta_start){
             for (size_t j = 0; j < args.info.dice; j++){
                 
                 if (j + i < args.info.size){
-                    (*meta_start)[i]->successors[j] = (*meta_start)[i+1+j];
+                    (*graph_array)[i]->successors[j] = (*graph_array)[i+1+j];
                 } else {
-                    (*meta_start)[i]->successors[j] = NULL;
+                    (*graph_array)[i]->successors[j] = NULL;
                 }
                 
-                (*meta_start)[i]->special = 0;
+                (*graph_array)[i]->special = 0;
             }
         }
     }
 
     if (debug) printf("Set successors for all %lu nodes, returning from func\n", args.info.size+1);
 
-    return (*meta_start)[0];
+    return (*graph_array)[0];
 }
 
 void cleanup_graph(node** target, game_meta info){
