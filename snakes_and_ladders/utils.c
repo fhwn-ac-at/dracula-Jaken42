@@ -187,7 +187,7 @@ cli_args parse_args(int argc, char** argv){
 
             case '?':
                 if (temp_special_array) free(temp_special_array);
-                fprintf(stderr, "Usage: %s [-w <width>] [-h <height>] [-d <die faces>] [-s <special end 1> <special end 2>]\n", argv[0]);
+                fprintf(stderr, "Usage: %s [-w <width>] [-h <height>] [-d <die faces>] [-r <simulation roll limit>] [-n number of simulations] [-s <special end 1> <special end 2>]\n", argv[0]);
                 exit(EXIT_FAILURE);
             
             case ':':
@@ -209,7 +209,7 @@ cli_args parse_args(int argc, char** argv){
     // making the snake and ladder array
     args.specials = malloc(sizeof(size_t) * args.info.size);
     if (!args.specials){
-        free(temp_special_array);
+        if (temp_special_array) free(temp_special_array);
         fprintf(stderr, "Board size too large! please do not make a board with more than %lu fields\n", SIZE_MAX);
         exit(EXIT_FAILURE);
     }
