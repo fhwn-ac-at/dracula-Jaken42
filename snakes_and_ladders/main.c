@@ -1,6 +1,6 @@
 #include <time.h>
 
-// Header for handling input (via cmd line args)
+// Header for handling input (via cli args)
 #include "include/utils.h"
 
 // Header for graph functions
@@ -59,6 +59,7 @@ int main(int argc, char** argv){
     }
 
     unsigned long total_rolls = 0;
+    unsigned long total_wins = 0;
     size_t fastest_sim = 0;
 
     for (size_t i = 0; i < args.sample_size; i++){
@@ -70,20 +71,20 @@ int main(int argc, char** argv){
             fprintf(stderr, "Error allocating space for a simulation roll array!\n");
             exit(EXIT_FAILURE);
         }
-        if (!results[i].dnf) total_rolls += results[i].num_rolls;
+
+        // If sim success, add num rolls to total roll counter
+        if (!results[i].dnf){
+            total_rolls += results[i].num_rolls;
+            total_wins++;
+        } 
         
+        // Replace fastest sim if applicable
         if (!results[i].dnf && ((i > 0 && fastest_sim == 0) || results[i].num_rolls < results[fastest_sim].num_rolls)){
             fastest_sim = i+1;
         }
     }
 
-    
-
-    //for (size_t i = 0; i < args.sample_size; i++){
-    //    total_rolls += results[i].num_rolls;
-    //}
-
-    double average_rolls = (double)total_rolls / args.sample_size;
+    double average_rolls = (double)total_rolls / total_wins;
 
     printf("+-----------------------+\n| Simulation statistics |\n+-----------------------+\n");
     printf("| Sample size: %lu\n", args.sample_size);
@@ -105,10 +106,15 @@ int main(int argc, char** argv){
             
             if ((i + 1) % 9 == 0) printf("\n|");
         }
+        printf("\n+------------------------------------------------------------------------------------+");
 
-        printf("\n");
+    }
 
-        if (args.num_specials) printf("|\n| List of snakes and Ladders and times they were touched (Total %lu):\n", args.num_specials);
+    printf("\n");
+
+    if (args.num_specials){
+
+        printf("|\n| List of snakes and Ladders and times they were touched (Total %lu):\n", args.num_specials);
         
         size_t snake_counter = 0;
         size_t snake_touch_total = 0;
@@ -121,8 +127,12 @@ int main(int argc, char** argv){
             if (!args.specials[i] || i < args.specials[i]) continue;
             
             snake_counter++;
-            printf("| Snake #%lu (From %lu to %lu) - Touched %lu times in total (%.2f%% of all snake traversals)\n", snake_counter, i, args.specials[i], cleanup_board[args.specials[i]]->times_touched, ((float)cleanup_board[args.specials[i]]->times_touched / snake_touch_total) * 100.0f);
-            
+            printf("| Snake #%lu (From %lu to %lu) - ", snake_counter, i, args.specials[i]);
+            if (cleanup_board[args.specials[i]]->times_touched){
+                printf("Touched %lu times in total (%.2f%% of all snake traversals)\n", cleanup_board[args.specials[i]]->times_touched, ((float)cleanup_board[args.specials[i]]->times_touched / snake_touch_total) * 100.0f);
+            } else {
+                printf("Never touched\n");
+            }
         }
 
         size_t ladder_counter = 0;
@@ -135,31 +145,29 @@ int main(int argc, char** argv){
             if (!args.specials[i] || i > args.specials[i]) continue;
             
             ladder_counter++;
-            printf("| Ladder #%lu (From %lu to %lu) - Touched %lu times in total (%.2f%% of all ladder traversals)\n", ladder_counter, i, args.specials[i], cleanup_board[args.specials[i]]->times_touched, ((float)cleanup_board[args.specials[i]]->times_touched / ladder_touch_total) * 100.0f);
             
+            printf("| Ladder #%lu (From %lu to %lu) - ", ladder_counter, i, args.specials[i]);
+            if (cleanup_board[args.specials[i]]->times_touched){
+                printf("Touched %lu times in total (%.2f%% of all ladder traversals)\n", cleanup_board[args.specials[i]]->times_touched, ((float)cleanup_board[args.specials[i]]->times_touched / ladder_touch_total) * 100.0f);
+            } else {
+                printf("Never touched\n");
+            }
         }
 
         printf("+------------------------------------------------------------------------------------+\n");
+            
+        printf("\n");
     }
-    printf("\n");
-    /*
-    if (DEBUG) {
-        size_t abs_pos = 0;
-        for (int i = 0; i < results.num_rolls; i++){
-            if (abs_pos + results.rolls[i] <= args.info.size) abs_pos += results.rolls[i];
-            printf("Roll #%d: %lu\n - Absolute pos: %lu\n", i+1, results.rolls[i], abs_pos);
-        }
-    }
-    */
 
     for (size_t i = 0; i < args.sample_size; i++) {
-        //printf("Num rolls #%lu: %d\n", i, results[i].num_rolls);
         free(results[i].rolls);
     }
 
     free(args.specials);
     
     cleanup_graph(cleanup_board, args.info);
+
+    free(cleanup_board);
 
     return 0;
 }

@@ -34,6 +34,7 @@ node* generate_graph(cli_args args, node*** graph_array){
         return NULL;
     }
 
+    // Allocate space for Nodes
     for (size_t i = 0; i < args.info.size+1; i++){
         (*graph_array)[i] = create_node(args.info.dice);
         

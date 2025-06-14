@@ -1,5 +1,6 @@
 #pragma once
 
+// For an include
 #define _DEFAULT_SOURCE 1
 
 #include <stdio.h>
@@ -34,12 +35,15 @@ typedef struct special_pos{
     size_t end;
 } special_pos;
 
+/**
+ * @brief Struct of results of CLI parsing. Contains parameters for the board and the simulation.
+ */
 typedef struct cli_args {
-    game_meta info;
-    size_t* specials;
-    size_t num_specials;
-    size_t sample_size;
-    size_t roll_limit;
+    game_meta info;         /**< Struct that contains information on the board or dice. */
+    size_t* specials;       /**< Array that stores snake and ladder locations and destinations. For instance, if there is a ladder on cell 0 going to cell 10, specials[0] will be 10. */
+    size_t num_specials;    /**< Number of specials. */
+    size_t sample_size; 	/**< Number of simulation runs. */
+    size_t roll_limit;      /**< Limit of rolls per simulation. */
 } cli_args;
 
 /**

@@ -1,11 +1,13 @@
 CC = clang
 CFLAGS = -Wall -Wextra -pedantic --std=gnu99
-file =? snakes_and_ladders/example/default
+file = snakes_and_ladders/example/default
 
 file1 = snakes_and_ladders/example/normal_board
 file2 = snakes_and_ladders/example/oneshot
 file3 = snakes_and_ladders/example/whoops_all_1s
 file4 = snakes_and_ladders/example/impossible_difficulty
+file5 = snakes_and_ladders/example/coin_toss
+file6 = snakes_and_ladders/example/infinite_loop
 
 all: snl.out lv.out adjacency_matrix.out
 
@@ -21,19 +23,32 @@ adjacency_matrix.out:
 clean:
 	rm -f *.out
 
+# Runs with a default preset board from the default file
 run:
 	./snl.out $(shell cat $(file))
 
+# Runs with an example preset board from the default file
 run1:
 	./snl.out $(shell cat $(file1))
 
+# Runs with a board that forces a 100 roll on a d100.
 run2:
 	./snl.out $(shell cat $(file2))
 
+# Runs with a board that forces 100 rolls with a d1.
 run3:
 	./snl.out $(shell cat $(file3))
 
+# Runs a board that can never finish due to the set limit and the dice and board sizes.
 run4:
 	./snl.out $(shell cat $(file4))
+
+# Runs with a board that simulates doing a coin toss until you get a certain side.
+run5:
+	./snl.out $(shell cat $(file5))
+
+# Runs with a board that causes an infinite loop with snakes camping the exit.
+run6:
+	./snl.out $(shell cat $(file6))
 
 .PHONY: all clean

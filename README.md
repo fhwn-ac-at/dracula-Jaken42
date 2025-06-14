@@ -64,7 +64,7 @@ The program reads CLI arguments to customzie the board.
 
 ### Examples
 
-I have provided a few text files with examples in snakes_and_ladders/examples/.
+I have provided a few text files with examples in `snakes_and_ladders/examples/`.
 
 Use the make commands `run1` through `run4` to try them out, 
 or write `make run file=filename` to easily pass your own text file with flags!
