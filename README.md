@@ -68,3 +68,24 @@ I have provided a few text files with examples in `snakes_and_ladders/examples/`
 
 Use the make commands `run1` through `run6` to try them out, 
 or write `make run file=filename` to easily pass your own text file with flags!
+
+- **run**: default
+  Runs the simulation with a preset default board.
+
+- **run1**: normal_board
+  Creates an average board like youd find in an actual snakes and ladders game. 
+
+- **run2**: oneshot
+  Limits the simulation such that a single roll of 100 must be achieved on a d100 to win.
+
+- **run3**: whoops_all_1s
+  Changes the dice to be a d1, requiring 100 rolls.
+
+- **run4**: impossible_difficulty
+  Limits the simulation such that no configuration of rolls can achieve victory.
+
+- **run5**: coin_toss
+  Makes the field 1 x 1 and makes the dice a d2, effectively creating a coin flip simulator.
+
+- **run6**:
+  Plays the game normally with the caveat that 6 snakes camp the finish, causing an infinite loop.
