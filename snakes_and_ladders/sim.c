@@ -1,16 +1,49 @@
 #include "include/sim.h"
 
-size_t random_roll(size_t dice_faces){
-    
+/**
+ * @brief Rolls a random number for a dice with a given number of faces
+ * 
+ * @param dice_faces Size of dice.
+ * @param bias Determines where the bias lies. |
+ * 1: Lower numbers |
+ * 2: Center numbers |
+ * 3: Higher numbers |
+ * 
+ * @returns Random number with given bias.
+ */
+size_t random_roll(size_t dice_faces, int bias) {
+
     if (dice_faces == 1){
         return 0;
     }
 
-    // drand48 returns a double between 0 and 1. multiply to get one of the dice faces
-    return (size_t)(drand48() * dice_faces); 
+    double factor = drand48();
+
+    switch (bias){
+        
+        case UNBIASED:
+            break;
+
+        // Bias towards lower numbers
+        case 1:
+            factor = pow(factor, 2);
+            break;
+
+        // Bias towards center numbers (bell curve)
+        case 2:
+            factor = (drand48() + drand48() + drand48() + drand48() + drand48()) / 5.0;
+            break;
+            
+        // Bias towards higher numbers
+        case 3:
+            factor = 1.0 - pow(1.0 - factor, 2);
+            break;
+    }
+
+    return (size_t)(factor * dice_faces);
 }
 
-sim_result run_sim(node* pos, game_meta info, size_t roll_limit){
+sim_result run_sim(node* pos, game_meta info, size_t roll_limit, int dice_bias){
     
     sim_result result = {
         .dnf = 0,
@@ -35,7 +68,10 @@ sim_result run_sim(node* pos, game_meta info, size_t roll_limit){
 
     // Main rolling loop
     while (current.abs_pos != info.size && result.num_rolls < roll_limit){
-        size_t roll = random_roll(info.dice);
+        size_t roll;
+        
+        roll = random_roll(info.dice, dice_bias);
+        
 
         // If the roll is not out of bounds...
         if (current.field->successors[roll] != NULL){

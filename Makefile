@@ -8,11 +8,14 @@ file3 = snakes_and_ladders/example/whoops_all_1s
 file4 = snakes_and_ladders/example/impossible_difficulty
 file5 = snakes_and_ladders/example/coin_toss
 file6 = snakes_and_ladders/example/infinite_loop
+file7 = snakes_and_ladders/example/low_bias
+file8 = snakes_and_ladders/example/mid_bias
+file9 = snakes_and_ladders/example/high_bias
 
 all: snl.out lv.out adjacency_matrix.out
 
 snl.out: snakes_and_ladders/main.c snakes_and_ladders/graph.c snakes_and_ladders/utils.c snakes_and_ladders/sim.c
-	$(CC) $(CFLAGS) -o snl.out $^
+	$(CC) $(CFLAGS) -o snl.out $^ -lm
 
 lv.out:
 	$(CC) $(CFLAGS) -o lv.out las_vegas/main.c
@@ -50,5 +53,17 @@ run5:
 # Runs with a board that causes an infinite loop with snakes camping the exit.
 run6:
 	./snl.out $(shell cat $(file6))
+
+# Runs with a normal example board with bias towards lower numbers.
+run7:
+	./snl.out $(shell cat $(file7))
+
+# Runs with a normal example board with bias towards center numbers.
+run8:
+	./snl.out $(shell cat $(file8))
+
+# Runs with a normal example board with bias towards higher numbers.
+run9:
+	./snl.out $(shell cat $(file9))
 
 .PHONY: all clean

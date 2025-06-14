@@ -60,7 +60,8 @@ cli_args parse_args(int argc, char** argv){
         .specials = NULL,
         .num_specials = 0,
         .sample_size = DEFAULT_SAMPLE_SIZE,
-        .roll_limit = DEFAULT_ROLL_LIMIT
+        .roll_limit = DEFAULT_ROLL_LIMIT,
+        .distribution = UNBIASED
     };
     
     int opt;
@@ -69,7 +70,7 @@ cli_args parse_args(int argc, char** argv){
 
     int check_error = 0;
     
-    while((opt = getopt(argc, argv, "w:h:d:r:n:s:")) != -1){
+    while((opt = getopt(argc, argv, "w:h:d:u:r:n:s:")) != -1){
         
         switch (opt) {
             case -1:
@@ -102,6 +103,21 @@ cli_args parse_args(int argc, char** argv){
                     if (temp_special_array) free(temp_special_array);
                     exit(EXIT_FAILURE);
                 }
+                break;
+            
+            // Flag for normal distribution, 1 for start, 2 for center, 3 for end bias
+            case 'u':
+                args.distribution = (int)test_size_conversion(optarg, &check_error);
+                if (check_error){
+                    if (temp_special_array) free(temp_special_array);
+                    exit(EXIT_FAILURE);
+                }
+
+                if (args.distribution > 3){
+                    if (temp_special_array) free(temp_special_array);
+                    fprintf(stderr, "-u requires a valid number between 1 and 3 as an argument!\n\t1 - Bias to lower numbers\n\t2 - Bias to center numbers\n\t3 - Bias to higher numbers\n");
+                }
+
                 break;
             
             // Random roll limit before attempts are aborted

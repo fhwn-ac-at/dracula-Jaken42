@@ -18,6 +18,8 @@
 #define DEFAULT_HEIGHT 10
 #define DEFAULT_DICE_FACES 6
 
+#define UNBIASED 0
+
 // Limit on how many rolls a sim may attempt
 #define DEFAULT_ROLL_LIMIT 1000
 
@@ -44,6 +46,7 @@ typedef struct cli_args {
     size_t num_specials;    /**< Number of specials. */
     size_t sample_size; 	/**< Number of simulation runs. */
     size_t roll_limit;      /**< Limit of rolls per simulation. */
+    int distribution;       /**< Designates distribution of dice. | 0 is uniform and default | 1 is bias to lower numbers | 2 is bias to center numbers | 3 is bias to higher numbers |*/
 } cli_args;
 
 /**
