@@ -11,6 +11,7 @@ size_t random_roll(size_t dice_faces){
 }
 
 sim_result run_sim(node* pos, game_meta info, size_t roll_limit){
+    
     sim_result result = {
         .dnf = 0,
         .num_rolls = 0,
@@ -36,14 +37,19 @@ sim_result run_sim(node* pos, game_meta info, size_t roll_limit){
     while (current.abs_pos != info.size && result.num_rolls < roll_limit){
         size_t roll = random_roll(info.dice);
 
+        // If the roll is not out of bounds...
         if (current.field->successors[roll] != NULL){
            
+            // If the field we landed on is a snake or ladder
             if (current.field->successors[roll]->special){
+                
+                // Get new abs position and follow the special path
                 current.abs_pos = current.field->successors[roll]->special;
                 current.field = current.field->successors[roll]->successors[0];
 
-                // THIS WILL CAUSE CONCURRENCY ISSUES!
+                // THIS WILL (probably) CAUSE CONCURRENCY ISSUES!
                 current.field->times_touched += 1;
+            
             }  else {
                 current.abs_pos += roll + 1; 
                 current.field = current.field->successors[roll];

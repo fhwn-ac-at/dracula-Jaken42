@@ -22,7 +22,7 @@ int main(int argc, char** argv){
         }
     }
 
-    // This array is soley for freeing the nodes 
+    // This array is for freeing the nodes and for finding snakes and ladders later for printing
     node** cleanup_board = NULL;
 
     node* board_start = generate_graph(args, &cleanup_board);
@@ -32,20 +32,6 @@ int main(int argc, char** argv){
     }
 
     if (DEBUG) printf("Exited function. address of graph array: %p\n", (void*)cleanup_board);
-    
-    /*
-    if (DEBUG) {
-        //Printfs for checking successor pointers
-        for (size_t i = 0; i < args.info.size+1; i++){
-            printf("Successors for cell %lu:\n", i);
-            for (size_t j = 0; j < args.info.dice; j++){
-                printf("%lu: %p | ", j+1, (void*)cleanup_board[i]->successors[j]);
-                if (cleanup_board[i]->special) break;
-            }
-            printf("\n\n");
-        }
-    }
-    */
 
     srand48(time(NULL));
 
@@ -54,20 +40,26 @@ int main(int argc, char** argv){
     if (!results){
         free(args.specials);
         cleanup_graph(cleanup_board, args.info);
+        free(cleanup_board);
         fprintf(stderr, "Simulation result array malloc failed!\n");
         exit(EXIT_FAILURE);
     }
 
-    unsigned long total_rolls = 0;
+    unsigned long total_rolls = 0;  // Only from winning simulations
     unsigned long total_wins = 0;
     size_t fastest_sim = 0;
 
     for (size_t i = 0; i < args.sample_size; i++){
         results[i] = run_sim(board_start, args.info, args.roll_limit);
+        
+        // If sim error
         if (results[i].dnf < 0){
             for (size_t j = 0; j >= 0; j--) {
                 free(results[j].rolls);
             }
+            free(args.specials);
+            cleanup_graph(cleanup_board, args.info);
+            free(cleanup_board);
             fprintf(stderr, "Error allocating space for a simulation roll array!\n");
             exit(EXIT_FAILURE);
         }
@@ -86,7 +78,7 @@ int main(int argc, char** argv){
 
     double average_rolls = (double)total_rolls / total_wins;
 
-    printf("+-----------------------+\n| Simulation statistics |\n+-----------------------+\n");
+    printf("+-----------------------+\n| Simulation statistics |\n+-----------------------+\n|\n");
     printf("| Sample size: %lu\n", args.sample_size);
     printf("| Board size: %lu x %lu\n", args.info.width, args.info.height);
     printf("| Dice size: %lu\n", args.info.dice);
@@ -95,7 +87,7 @@ int main(int argc, char** argv){
     if (!fastest_sim){
         printf("| No simulation got to the finish!\n+------------------------------------------------------------------------------------+");
     } else {
-        printf("+------------------------------------------------------------------------------------+\n");
+        printf("+------------------------------------------------------------------------------------+\n|\n");
         printf("| Average number of rolls to win: %.4f\n", average_rolls);
         printf("| Fastest simulation:\n| Simulation #%lu with %u rolls\n", fastest_sim-1, results[fastest_sim-1].num_rolls);
         printf("| Rolls in this simulation:\n|");
@@ -116,6 +108,7 @@ int main(int argc, char** argv){
 
         printf("|\n| List of snakes and Ladders and times they were touched (Total %lu):\n", args.num_specials);
         
+        // Get snake statistics, save in variables
         size_t snake_counter = 0;
         size_t snake_touch_total = 0;
         for (size_t i = 0; i < args.info.size; i++){
@@ -123,6 +116,7 @@ int main(int argc, char** argv){
             snake_touch_total += cleanup_board[args.specials[i]]->times_touched;
         }
 
+        // Print snake statistics
         for (size_t i = 0; i < args.info.size; i++){
             if (!args.specials[i] || i < args.specials[i]) continue;
             
@@ -135,12 +129,15 @@ int main(int argc, char** argv){
             }
         }
 
+        // Get snake statistics, save in varaibles
         size_t ladder_counter = 0;
         size_t ladder_touch_total = 0;
         for (size_t i = 0; i < args.info.size; i++){
             if (!args.specials[i] || i > args.specials[i]) continue;
             ladder_touch_total += cleanup_board[args.specials[i]]->times_touched;
         }
+
+        // Print ladder statistics
         for (size_t i = 0; i < args.info.size; i++){
             if (!args.specials[i] || i > args.specials[i]) continue;
             
@@ -155,18 +152,14 @@ int main(int argc, char** argv){
         }
 
         printf("+------------------------------------------------------------------------------------+\n");
-            
-        printf("\n");
     }
 
+    
     for (size_t i = 0; i < args.sample_size; i++) {
         free(results[i].rolls);
     }
-
     free(args.specials);
-    
     cleanup_graph(cleanup_board, args.info);
-
     free(cleanup_board);
 
     return 0;

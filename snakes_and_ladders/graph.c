@@ -1,9 +1,12 @@
 #include "include/graph.h"
 
-int debug = 0;
+#define DEBUG 0
 
 /**
  * @brief Allocates a graph node on the heap.
+ * 
+ * @param num_successors number of successors of each node, depends on number of faces on dice.
+ * 
  * @return Pointer to node or NULL if malloc failed.
  */
 node* create_node(size_t num_successors){
@@ -48,13 +51,14 @@ node* generate_graph(cli_args args, node*** graph_array){
                 free((*graph_array)[j]);
                 (*graph_array)[j] = NULL;
             }
+            free(graph_array);
             free(args.specials);
             fprintf(stderr, "Error allocating space for graph nodes! Exiting...\n");
             return NULL;
         }
     }
 
-    if (debug) printf("Created %lu nodes\n", args.info.size+1);
+    if (DEBUG) printf("Created %lu nodes\n", args.info.size+1);
 
     // Assign successors for i
     for (size_t i = 0; i < args.info.size+1; i++){
@@ -79,7 +83,7 @@ node* generate_graph(cli_args args, node*** graph_array){
         }
     }
 
-    if (debug) printf("Set successors for all %lu nodes, returning from func\n", args.info.size+1);
+    if (DEBUG) printf("Set successors for all %lu nodes, returning from func\n", args.info.size+1);
 
     return (*graph_array)[0];
 }
@@ -92,5 +96,5 @@ void cleanup_graph(node** target, game_meta info){
         free(target[i]);
     }
 
-    if (debug) printf("Cleaning up all %lu nodes\n", info.size+1);
+    if (DEBUG) printf("Cleaning up all %lu nodes\n", info.size+1);
 }
